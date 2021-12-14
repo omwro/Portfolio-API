@@ -12,7 +12,6 @@ class VisitorBase(BaseModel):
 
 
 class VisitorCreate(VisitorBase):
-    datetime: str
     pass
 
 

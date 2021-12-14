@@ -1,7 +1,4 @@
-import portfolio.visitor as visitor
-from typing import List
-
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
 
 from sql import crud, models, schemas
@@ -31,7 +28,7 @@ async def get_portfolio():
     return {"message": "Hello Portfolio website"}
 
 
-@app.get("/visitor", response_model=schemas.Visitor)
+@app.get("/visitor")
 async def get_visitor(db: Session = Depends(get_db)):
     return crud.get_visitors(db)
 

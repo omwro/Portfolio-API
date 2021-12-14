@@ -1,5 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, Column, Integer, String, DateTime
 
 from sql.database import Base
 
@@ -8,9 +7,9 @@ class Visitor(Base):
     __tablename__ = "visitors"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    website = Column(String)
+    website = Column(String(255))
     datetime = Column(DateTime)
-    ip = Column(String)
-    country = Column(String)
-    city = Column(String)
-    useragent = Column(String)
+    ip = Column(String(255))
+    country = Column(String(255))
+    city = Column(String(255))
+    useragent = Column(String(1000))

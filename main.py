@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
 
@@ -7,7 +8,6 @@ from sql.database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
 
 # Dependency
 def get_db():
@@ -36,3 +36,7 @@ async def get_visitor(db: Session = Depends(get_db)):
 @app.post("/visitor", response_model=schemas.Visitor)
 async def set_visitor(visitor: schemas.VisitorCreate, db: Session = Depends(get_db)):
     return crud.set_visitor(db, visitor)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)

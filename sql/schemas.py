@@ -1,10 +1,9 @@
-from typing import List, Optional
-
 from pydantic import BaseModel
 
 
 class VisitorBase(BaseModel):
     website: str
+    uri: str
     ip: str
     country: str
     city: str

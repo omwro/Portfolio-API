@@ -11,6 +11,7 @@ def get_visitors(db: Session):
 def set_visitor(db: Session, visitor: schemas.VisitorCreate):
     db_visitor = models.Visitor(
         website=visitor.website,
+        uri=visitor.uri,
         ip=visitor.ip,
         datetime=datetime.now(),
         country=visitor.country,

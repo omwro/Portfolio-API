@@ -1,30 +1,34 @@
+import os
+from dotenv import load_dotenv
 import uvicorn
-
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-
 from sqlalchemy.orm import Session
-
 from sql import crud, models, schemas
 from sql.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
-
-origins = [
-    "http://localhost:80",
-    "http://localhost:443",
-    "http://localhost:8080"
+whitelisted_ips = [
+    "127.0.0.1",
+    os.getenv("ADMIN_IP")
 ]
 
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def ip_whitelist_middleware(req: Request, call_next):
+    if req.client.host in whitelisted_ips:
+        return await call_next(req)
+    return Response(status_code=403, content="You are forbidden to access this perfectly programmed API ")
 
 
 # Dependency
@@ -57,4 +61,5 @@ async def set_visitor(visitor: schemas.VisitorCreate, request: Request, db: Sess
 
 
 if __name__ == "__main__":
+    load_dotenv()
     uvicorn.run(app, host="127.0.0.1", port=8000)

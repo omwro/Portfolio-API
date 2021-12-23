@@ -8,14 +8,12 @@ def get_visitors(db: Session):
     return db.query(models.Visitor).all()
 
 
-def set_visitor(db: Session, visitor: schemas.VisitorCreate):
+def set_visitor(db: Session, visitor: schemas.VisitorCreate, ip):
     db_visitor = models.Visitor(
-        website=visitor.website,
+        app=visitor.app,
         uri=visitor.uri,
-        ip=visitor.ip,
+        ip=ip,
         datetime=datetime.now(),
-        country=visitor.country,
-        city=visitor.city,
         useragent=visitor.useragent,
     )
     db.add(db_visitor)

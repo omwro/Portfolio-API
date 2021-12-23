@@ -1,5 +1,8 @@
 import uvicorn
-from fastapi import Depends, FastAPI
+
+from fastapi import Depends, FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+
 from sqlalchemy.orm import Session
 
 from sql import crud, models, schemas
@@ -8,6 +11,21 @@ from sql.database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:80",
+    "http://localhost:443",
+    "http://localhost:8080"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Dependency
 def get_db():
@@ -34,8 +52,8 @@ async def get_visitor(db: Session = Depends(get_db)):
 
 
 @app.post("/visitor", response_model=schemas.Visitor)
-async def set_visitor(visitor: schemas.VisitorCreate, db: Session = Depends(get_db)):
-    return crud.set_visitor(db, visitor)
+async def set_visitor(visitor: schemas.VisitorCreate, request: Request, db: Session = Depends(get_db)):
+    return crud.set_visitor(db, visitor, request.client.host)
 
 
 if __name__ == "__main__":

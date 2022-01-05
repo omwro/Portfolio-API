@@ -6,13 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sql import crud, models, schemas
 from sql.database import SessionLocal, engine
+from util import get_domain_from_origin
 
 models.Base.metadata.create_all(bind=engine)
 
-whitelisted_ips = [
-    "127.0.0.1",
-    os.getenv("ADMIN_IP")
-]
+whitelisted_ips = os.getenv("WHITELIST_IP").split(",")
+whitelisted_origins = os.getenv("WHITELIST_ORIGIN").split(",")
 
 app = FastAPI()
 app.add_middleware(
@@ -26,7 +25,9 @@ app.add_middleware(
 
 @app.middleware("http")
 async def ip_whitelist_middleware(req: Request, call_next):
-    if req.client.host in whitelisted_ips:
+    client_ip = req.client.host
+    client_origin = get_domain_from_origin(req.headers.get("origin"))
+    if client_origin in whitelisted_origins or client_ip in whitelisted_ips:
         return await call_next(req)
     return Response(status_code=403, content="You are forbidden to access this perfectly programmed API ")
 
